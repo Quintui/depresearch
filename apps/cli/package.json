@@ -1,6 +1,6 @@
 {
   "name": "depresearch",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Research any open-source repo without leaving your project.",
   "type": "module",
   "license": "MIT",
