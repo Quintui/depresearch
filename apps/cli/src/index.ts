@@ -1,10 +1,8 @@
-#!/usr/bin/env node
 import { defineCommand, runMain } from "citty";
 import { researchCommand } from "./commands/research.js";
 import { configCommand } from "./commands/config.js";
-import { statusCommand, stopCommand } from "./commands/status.js";
 
-const SUB_COMMANDS = ["research", "config", "status", "stop"];
+const SUB_COMMANDS = ["research", "config"];
 
 const main = defineCommand({
   meta: {
@@ -16,13 +14,12 @@ const main = defineCommand({
   subCommands: {
     research: researchCommand,
     config: configCommand,
-    status: statusCommand,
-    stop: stopCommand,
   },
   args: {
     query: {
       type: "positional",
-      description: 'Research question (e.g. "how does zod parse work internally")',
+      description:
+        'Research question (e.g. "how does zod parse work internally")',
       required: false,
     },
     stream: {
@@ -34,7 +31,7 @@ const main = defineCommand({
   async run({ args }) {
     const query = args.query as string | undefined;
 
-    // If the first arg matched a subcommand, citty already ran it -- bail out
+    // If the first arg matched a subcommand, citty already ran it — bail out
     if (query && SUB_COMMANDS.includes(query)) {
       return;
     }
@@ -42,8 +39,6 @@ const main = defineCommand({
     if (!query) {
       console.log('Usage: dpr "<query>" [--stream]');
       console.log("       dpr config set|get <key> [value]");
-      console.log("       dpr status");
-      console.log("       dpr stop");
       console.log("\nRun `dpr --help` for more info.");
       return;
     }

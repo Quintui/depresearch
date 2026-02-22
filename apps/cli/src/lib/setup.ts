@@ -6,11 +6,10 @@ import {
   ENV_FILE,
   WORKSPACE_DIR,
 } from "@depresearch/shared";
-import { DEFAULT_PORT, DEFAULT_MODEL } from "@depresearch/shared";
+import { DEFAULT_MODEL } from "@depresearch/shared";
 import type { ConfigData } from "@depresearch/shared";
 
 const DEFAULT_CONFIG: ConfigData = {
-  port: DEFAULT_PORT,
   model: DEFAULT_MODEL,
 };
 
@@ -62,6 +61,16 @@ export function setApiKey(key: string): void {
   writeFileSync(ENV_FILE, `OPENROUTER_API_KEY=${key}\n`);
 }
 
+/**
+ * Load the .env file into process.env so Mastra can pick up the API key.
+ */
+export function loadEnv(): void {
+  const key = getApiKey();
+  if (key) {
+    process.env.OPENROUTER_API_KEY = key;
+  }
+}
+
 export function ensureApiKey(): void {
   const key = getApiKey();
   if (!key) {
@@ -73,11 +82,13 @@ export function ensureApiKey(): void {
 }
 
 /**
- * Full setup check: ensure config dir, config file, and API key exist.
+ * Full setup check: ensure config dir, config file, API key exist,
+ * and load env vars for Mastra.
  * Returns the loaded config.
  */
 export function ensureSetup(): ConfigData {
   const config = ensureConfigFile();
   ensureApiKey();
+  loadEnv();
   return config;
 }

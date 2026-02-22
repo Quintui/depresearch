@@ -1,31 +1,23 @@
 import { defineCommand } from "citty";
 import consola from "consola";
 import { ensureSetup } from "../lib/setup.js";
-import { ensureServer } from "../lib/server.js";
-import { getClient } from "../lib/client.js";
-
-const AGENT_ID = "research-agent";
+import { getMastra } from "../mastra/index.js";
 
 export async function runResearch(query: string, shouldStream: boolean) {
   ensureSetup();
-  await ensureServer();
 
-  const client = getClient();
-  const agent = client.getAgent(AGENT_ID);
+  const mastra = getMastra();
+  const agent = mastra.getAgent("researchAgent");
 
   if (shouldStream) {
     consola.start(`Researching...\n`);
 
     try {
-      const response = await agent.stream(query);
+      const response = await agent.stream(query, {maxSteps: 999});
 
-      await response.processDataStream({
-        async onChunk(chunk) {
-          if (chunk.type === "text-delta") {
-            process.stdout.write(chunk.payload.text);
-          }
-        },
-      });
+      for await (const chunk of response.textStream) {
+        process.stdout.write(chunk);
+      }
 
       process.stdout.write("\n");
     } catch (err) {
@@ -37,7 +29,7 @@ export async function runResearch(query: string, shouldStream: boolean) {
     consola.start(`Researching...`);
 
     try {
-      const response = await agent.generate(query);
+      const response = await agent.generate(query, {maxSteps: 999});
       console.log();
       console.log(response.text);
     } catch (err) {
@@ -56,7 +48,8 @@ export const researchCommand = defineCommand({
   args: {
     query: {
       type: "positional",
-      description: 'Research question (e.g. "how does zod parse work internally")',
+      description:
+        'Research question (e.g. "how does zod parse work internally")',
       required: true,
     },
     stream: {

@@ -8,6 +8,22 @@ import {
   setApiKey,
 } from "../lib/setup.js";
 
+function printConfigOverview(): void {
+  const config = readConfig();
+  const apiKey = getApiKey();
+
+  console.log("Current configuration:\n");
+  console.log(
+    `  api-key   ${apiKey ? apiKey.slice(0, 8) + "..." + apiKey.slice(-4) : "(not set)"}`,
+  );
+  console.log(`  model     ${config.model}`);
+  console.log();
+  console.log("Usage:");
+  console.log("  dpr config set api-key <your-openrouter-key>");
+  console.log("  dpr config set model <model-id>");
+  console.log("  dpr config get <key>");
+}
+
 export const configCommand = defineCommand({
   meta: {
     name: "config",
@@ -17,12 +33,12 @@ export const configCommand = defineCommand({
     set: defineCommand({
       meta: {
         name: "set",
-        description: "Set a config value",
+        description: "Set a config value (api-key, model)",
       },
       args: {
         key: {
           type: "positional",
-          description: "Config key (api-key, model, port)",
+          description: "api-key | model",
           required: true,
         },
         value: {
@@ -50,21 +66,9 @@ export const configCommand = defineCommand({
             consola.success(`Model set to: ${value}`);
             break;
           }
-          case "port": {
-            const port = parseInt(value, 10);
-            if (isNaN(port) || port < 1 || port > 65535) {
-              consola.error("Port must be a number between 1 and 65535.");
-              process.exit(1);
-            }
-            const config = readConfig();
-            config.port = port;
-            writeConfig(config);
-            consola.success(`Port set to: ${port}`);
-            break;
-          }
           default: {
             consola.error(
-              `Unknown config key: ${key}\nValid keys: api-key, model, port`,
+              `Unknown config key: "${key}"\n\nAvailable keys:\n  api-key   Your OpenRouter API key (required)\n  model     AI model to use (e.g. openrouter/google/gemini-3-flash-preview)`,
             );
             process.exit(1);
           }
@@ -74,12 +78,12 @@ export const configCommand = defineCommand({
     get: defineCommand({
       meta: {
         name: "get",
-        description: "Get a config value",
+        description: "Get a config value (api-key, model)",
       },
       args: {
         key: {
           type: "positional",
-          description: "Config key (api-key, model, port)",
+          description: "api-key | model",
           required: true,
         },
       },
@@ -90,12 +94,12 @@ export const configCommand = defineCommand({
           case "api-key": {
             const apiKey = getApiKey();
             if (apiKey) {
-              // Mask the key for display
-              const masked =
-                apiKey.slice(0, 8) + "..." + apiKey.slice(-4);
+              const masked = apiKey.slice(0, 8) + "..." + apiKey.slice(-4);
               console.log(masked);
             } else {
-              consola.warn("No API key configured.");
+              consola.warn(
+                "No API key configured. Run:\n\n  dpr config set api-key <your-openrouter-key>",
+              );
             }
             break;
           }
@@ -104,19 +108,17 @@ export const configCommand = defineCommand({
             console.log(config.model);
             break;
           }
-          case "port": {
-            const config = readConfig();
-            console.log(config.port);
-            break;
-          }
           default: {
             consola.error(
-              `Unknown config key: ${key}\nValid keys: api-key, model, port`,
+              `Unknown config key: "${key}"\n\nAvailable keys:\n  api-key   Your OpenRouter API key (required)\n  model     AI model to use (e.g. openrouter/google/gemini-3-flash-preview)`,
             );
             process.exit(1);
           }
         }
       },
     }),
+  },
+  run() {
+    printConfigOverview();
   },
 });
