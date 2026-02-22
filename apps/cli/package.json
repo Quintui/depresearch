@@ -1,6 +1,6 @@
 {
   "name": "depresearch",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Research any open-source repo without leaving your project.",
   "type": "module",
   "license": "MIT",
@@ -24,8 +24,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kristianvtr/depresearch"
+    "url": "https://github.com/Quintui/depresearch"
   },
+  "homepage": "https://github.com/Quintui/depresearch",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
