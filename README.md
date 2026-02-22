@@ -1,38 +1,51 @@
 # depresearch
 
-Deep research for your dependencies — without leaving your project.
+Research any open-source repo without leaving your project.
 
 ## The Problem
 
-You find an open-source library that solves a problem in your app. Now you need your coding agent to understand how it works — its internals, patterns, the right way to integrate it.
+You're building an AI chat interface. You see someone on X share their open-source chat app with a slick streaming implementation, or a clever context window optimization, or a feature you want in your app.
 
-But your agent only has your project context. Pasting docs floods the context window. Switching to the library's repo loses your project context. You end up manually reading source code and relaying information back and forth.
+**Without agents:** You go to their repo, read the source code, figure out how the feature works, then manually bring that knowledge back to your project.
 
-## What depresearch Does
+**With agents:** You clone their repo, ask AI how the feature works, copy the response, paste it into the AI chat session that has your project context. Better, but still a lot of friction.
 
-`depresearch` (alias: `dpr`) is a CLI tool that runs a dedicated AI agent to research any JS/TS library by cloning and reading its actual source code. It runs locally, in its own sandboxed workspace, so your main coding agent's context stays clean.
-
-Ask a question, get a detailed source-code walkthrough with file paths, line numbers, and code snippets — ready to feed back to your coding agent.
+**With depresearch:** You run one command:
 
 ```bash
-dpr research "how does zod z.infer work internally" --stream
+dpr https://github.com/someone/cool-chat-app "how does their streaming implementation work"
 ```
 
-```
-**Entry Point** — z.infer is a conditional type defined in src/types.ts:847...
+You get back a detailed source-code walkthrough — entry points, execution flow, file paths, code snippets — ready to act on.
 
-**Flow Trace** — When you call z.string().parse(data), it enters
-safeParse() at src/types.ts:284, which calls _parse() on the
-ZodString subclass (src/types.ts:512)...
+## The Real Power: Agent-to-Agent
 
-**Design Rationale** — The type inference works entirely at the
-type level through recursive conditional types...
+The CLI (`dpr`) is designed to be called by your coding agent as a sub-agent.
+
+Your agent sees a repo it needs to understand? It shells out to `dpr`, gets back implementation-ready knowledge, and keeps working — without polluting its own context window with an entire foreign codebase.
+
 ```
+Your coding agent (e.g. Claude, Cursor, OpenCode)
+    │
+    │  "I need to understand how this repo handles X"
+    │
+    ├── shells out: dpr <repo-url> "how does X work"
+    │       │
+    │       ├── clones the repo
+    │       ├── dedicated research agent reads source code
+    │       └── returns structured walkthrough
+    │
+    ├── receives concise, implementation-focused answer
+    │
+    └── continues working on YOUR project with that knowledge
+```
+
+No context window pollution. No manual copy-paste. No repo switching.
 
 ## How It Works
 
 ```
-dpr research "how does zod parse work"
+dpr <repo-url> "your question about a feature"
     │
     ▼
 CLI loads config from ~/.depresearch/
@@ -40,15 +53,14 @@ CLI loads config from ~/.depresearch/
     ▼
 Mastra agent starts in-process (no server needed)
     │
-    ├── repo-getter agent resolves "zod" → github.com/colinhacks/zod
-    ├── clones repo into ~/.depresearch/workspace/zod
+    ├── clones repo into ~/.depresearch/workspace/
     ├── reads source code, traces execution paths
     │
     ▼
-Detailed walkthrough printed to terminal
+Detailed walkthrough printed to stdout
 ```
 
-The agent runs entirely on your machine using [Mastra](https://mastra.ai) workspaces. It clones repos into `~/.depresearch/workspace/`, reads files, runs shell commands — all sandboxed away from your project directory.
+The agent runs entirely on your machine using [Mastra](https://mastra.ai). It clones repos into `~/.depresearch/workspace/`, reads files, runs shell commands — all sandboxed away from your project directory.
 
 ## Install
 
@@ -64,7 +76,7 @@ Requires Node.js 20+ and an [OpenRouter](https://openrouter.ai) API key.
 dpr config set api-key <your-openrouter-key>
 ```
 
-That's it. Run `dpr config` to see all current settings:
+Run `dpr config` to see all current settings:
 
 ```
 Current configuration:
@@ -81,18 +93,29 @@ Usage:
 ## Usage
 
 ```bash
-# Research a library (non-streaming)
-dpr research "how does zod z.infer work internally"
+# Research a feature in a specific repo
+dpr https://github.com/mckaywrigley/chatbot-ui "how does the streaming response work"
 
 # Stream response tokens in real-time
-dpr research "how does react useEffect cleanup work" --stream
+dpr https://github.com/steven-tey/chathn "how do they handle the AI context window" --stream
 
-# Shorthand (skip the "research" subcommand)
-dpr "how does drizzle handle migrations" --stream
+# It can also resolve repos by library name
+dpr research "how does zod z.infer work internally"
 
 # Change the AI model
 dpr config set model openrouter/google/gemini-3-flash-preview
 ```
+
+## What You Get Back
+
+The research agent traces actual code paths and returns structured walkthroughs:
+
+- **Entry Point** — Where the feature starts in the source code
+- **Flow Trace** — Step-by-step execution path with file:line references and code snippets
+- **How It Fits** — How this piece connects to the broader architecture
+- **Design Rationale** — Why it's built this way, patterns and tradeoffs
+
+All responses include file paths with line numbers and code snippets so the output is self-contained — you don't need access to the repo afterward.
 
 ## Configuration
 
@@ -110,17 +133,6 @@ All config lives in `~/.depresearch/`:
 |---|---|---|
 | `api-key` | Your OpenRouter API key | (required) |
 | `model` | AI model for the research agent | `anthropic/claude-sonnet-4` |
-
-## How the Agent Responds
-
-The research agent traces actual code paths and returns structured walkthroughs:
-
-- **Entry Point** — Where the feature starts in the source code
-- **Flow Trace** — Step-by-step execution path with file:line references and inline code snippets
-- **How It Fits** — How this piece connects to the broader architecture
-- **Design Rationale** — Why it's built this way, patterns and tradeoffs
-
-All responses include file paths with line numbers and 3-10 line code snippets so the output is self-contained — you don't need access to the repo afterward.
 
 ## Tech Stack
 
