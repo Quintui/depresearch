@@ -13,7 +13,7 @@ You're building an AI chat interface. You see someone on X share their open-sour
 **With depresearch:** You run one command:
 
 ```bash
-dpr https://github.com/someone/cool-chat-app "how does their streaming implementation work"
+dpr "how does the streaming implementation work in https://github.com/someone/cool-chat-app"
 ```
 
 You get back a detailed source-code walkthrough — entry points, execution flow, file paths, code snippets — ready to act on.
@@ -29,7 +29,7 @@ Your coding agent (e.g. Claude, Cursor, OpenCode)
     │
     │  "I need to understand how this repo handles X"
     │
-    ├── shells out: dpr <repo-url> "how does X work"
+    ├── shells out: dpr "how does X work in <repo-url>"
     │       │
     │       ├── clones the repo
     │       ├── dedicated research agent reads source code
@@ -45,7 +45,7 @@ No context window pollution. No manual copy-paste. No repo switching.
 ## How It Works
 
 ```
-dpr <repo-url> "your question about a feature"
+dpr "your question about a feature in <repo-url>"
     │
     ▼
 CLI loads config from ~/.depresearch/
@@ -94,13 +94,13 @@ Usage:
 
 ```bash
 # Research a feature in a specific repo
-dpr https://github.com/mckaywrigley/chatbot-ui "how does the streaming response work"
+dpr "how does the streaming response work in https://github.com/mckaywrigley/chatbot-ui"
 
 # Stream response tokens in real-time
-dpr https://github.com/steven-tey/chathn "how do they handle the AI context window" --stream
+dpr "how do they handle the AI context window in https://github.com/steven-tey/chathn" --stream
 
 # It can also resolve repos by library name
-dpr research "how does zod z.infer work internally"
+dpr "how does zod z.infer work internally"
 
 # Change the AI model
 dpr config set model openrouter/google/gemini-3-flash-preview
