@@ -1,19 +1,23 @@
 import { defineCommand } from "citty";
 import consola from "consola";
+import { CONFIG_DIR } from "@depresearch/shared";
+import { createMastra } from "@depresearch/mastra";
 import { ensureSetup } from "../lib/setup.js";
-import { getMastra } from "../mastra/index.js";
 
 export async function runResearch(query: string, shouldStream: boolean) {
-  ensureSetup();
+  const config = ensureSetup();
 
-  const mastra = getMastra();
+  const mastra = createMastra({
+    storageUrl: `file:${CONFIG_DIR}/mastra.db`,
+    model: config.model,
+  });
   const agent = mastra.getAgent("researchAgent");
 
   if (shouldStream) {
     consola.start(`Researching...\n`);
 
     try {
-      const response = await agent.stream(query, {maxSteps: 999});
+      const response = await agent.stream(query, { maxSteps: 999 });
 
       for await (const chunk of response.textStream) {
         process.stdout.write(chunk);
@@ -29,7 +33,7 @@ export async function runResearch(query: string, shouldStream: boolean) {
     consola.start(`Researching...`);
 
     try {
-      const response = await agent.generate(query, {maxSteps: 999});
+      const response = await agent.generate(query, { maxSteps: 999 });
       console.log();
       console.log(response.text);
     } catch (err) {
@@ -43,13 +47,13 @@ export async function runResearch(query: string, shouldStream: boolean) {
 export const researchCommand = defineCommand({
   meta: {
     name: "research",
-    description: "Research a JS/TS library by analyzing its source code",
+    description: "Research an open-source repo by analyzing its source code",
   },
   args: {
     query: {
       type: "positional",
       description:
-        'Research question (e.g. "how does zod parse work internally")',
+        'Research question (e.g. "how does streaming work in https://github.com/user/repo")',
       required: true,
     },
     stream: {

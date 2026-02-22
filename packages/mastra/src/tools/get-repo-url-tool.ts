@@ -4,7 +4,7 @@ import z from "zod";
 export const getRepoUrlTool = createTool({
   id: "get-repo-url-tool",
   description:
-    "Resolves a JS/TS library name (e.g. 'zod', 'react', 'drizzle-orm') to its GitHub repository URL by querying the repo-getter agent.",
+    "Resolves a JS/TS library or project name (e.g. 'zod', 'react', 'drizzle-orm') to its GitHub repository URL by querying the repo-getter agent.",
   inputSchema: z.object({
     libraryName: z.string(),
   }),

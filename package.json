@@ -7,7 +7,6 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "dev:server": "turbo dev --filter=@depresearch/server",
     "lint": "turbo lint",
     "clean": "turbo clean"
   },

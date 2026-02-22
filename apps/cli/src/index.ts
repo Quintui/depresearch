@@ -9,7 +9,7 @@ const main = defineCommand({
     name: "depresearch",
     version: "0.0.1",
     description:
-      "Deep research for your dependencies. Understand any JS/TS library by analyzing its source code.",
+      "Research any open-source repo without leaving your project.",
   },
   subCommands: {
     research: researchCommand,
@@ -19,7 +19,7 @@ const main = defineCommand({
     query: {
       type: "positional",
       description:
-        'Research question (e.g. "how does zod parse work internally")',
+        'Research question (e.g. "how does streaming work in https://github.com/user/repo")',
       required: false,
     },
     stream: {

@@ -9,7 +9,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   // Inline workspace packages — they don't exist on npm
-  noExternal: ["@depresearch/shared"],
+  noExternal: ["@depresearch/shared", "@depresearch/mastra"],
   // Keep banner for the shebang
   banner: {
     js: "#!/usr/bin/env node",
