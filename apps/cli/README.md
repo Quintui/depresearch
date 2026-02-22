@@ -31,6 +31,16 @@ Your coding agent
     └── continues working on your project
 ```
 
+## Add as an Agent Skill
+
+You can install depresearch as an [agent skill](https://github.com/anthropics/skills) so your coding agent knows how to use it automatically:
+
+```bash
+npx skills add https://github.com/Quintui/depresearch
+```
+
+Once installed, your agent can call `dpr` on its own whenever it needs to research an external codebase — no manual prompting required.
+
 ## How It Works
 
 ```
