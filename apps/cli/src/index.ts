@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+import { defineCommand, runMain } from "citty";
+import { researchCommand } from "./commands/research.js";
+import { configCommand } from "./commands/config.js";
+import { statusCommand, stopCommand } from "./commands/status.js";
+
+const SUB_COMMANDS = ["research", "config", "status", "stop"];
+
+const main = defineCommand({
+  meta: {
+    name: "depresearch",
+    version: "0.0.1",
+    description:
+      "Deep research for your dependencies. Understand any JS/TS library by analyzing its source code.",
+  },
+  subCommands: {
+    research: researchCommand,
+    config: configCommand,
+    status: statusCommand,
+    stop: stopCommand,
+  },
+  args: {
+    query: {
+      type: "positional",
+      description: 'Research question (e.g. "how does zod parse work internally")',
+      required: false,
+    },
+    stream: {
+      type: "boolean",
+      description: "Stream response tokens in real-time",
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const query = args.query as string | undefined;
+
+    // If the first arg matched a subcommand, citty already ran it -- bail out
+    if (query && SUB_COMMANDS.includes(query)) {
+      return;
+    }
+
+    if (!query) {
+      console.log('Usage: dpr "<query>" [--stream]');
+      console.log("       dpr config set|get <key> [value]");
+      console.log("       dpr status");
+      console.log("       dpr stop");
+      console.log("\nRun `dpr --help` for more info.");
+      return;
+    }
+
+    const { runResearch } = await import("./commands/research.js");
+    await runResearch(query, args.stream as boolean);
+  },
+});
+
+runMain(main);

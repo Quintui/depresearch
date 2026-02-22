@@ -1,0 +1,25 @@
+{
+  "name": "@depresearch/cli",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "depresearch": "./dist/index.js",
+    "dpr": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "bun dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@depresearch/shared": "workspace:*",
+    "@mastra/client-js": "^1.5.0",
+    "citty": "^0.2.1",
+    "consola": "^3.4.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8"
+  }
+}

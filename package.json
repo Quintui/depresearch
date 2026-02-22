@@ -1,0 +1,18 @@
+{
+  "name": "depresearch",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "dev:server": "turbo dev --filter=@depresearch/server",
+    "lint": "turbo lint",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.9",
+    "turbo": "^2",
+    "typescript": "^5.8"
+  },
+  "packageManager": "bun@1.2.4"
+}
