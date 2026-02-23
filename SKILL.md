@@ -24,13 +24,13 @@ dpr config set api-key <your-openrouter-key>
 
 ```bash
 # Research a specific repo
-dpr "how does streaming work in https://github.com/user/repo"
+dpr research "how does streaming work in https://github.com/user/repo"
 
 # Stream output in real-time
-dpr "how does auth work in https://github.com/user/repo" --stream
+dpr research "how does auth work in https://github.com/user/repo" --stream
 
 # Just use a library name -- it will find the repo automatically
-dpr "how does zod z.infer work internally"
+dpr research "how does zod z.infer work internally"
 ```
 
 ## Config
