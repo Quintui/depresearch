@@ -1,6 +1,6 @@
 ---
 name: depresearch
-description: CLI tool for AI-powered research of open-source repositories. Use when you need to understand how a feature works in an external codebase without cloning it yourself.
+description: "CLI tool (dpr) for AI-powered research of open-source repositories — search code, trace execution paths, read files, and analyze APIs in any GitHub repo. Use when you need to explore source code, look up how a library works, or understand a feature in an external codebase without cloning it yourself."
 ---
 
 # depresearch
